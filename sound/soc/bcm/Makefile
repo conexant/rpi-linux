@@ -22,6 +22,7 @@ snd-soc-dionaudio-loco-objs := dionaudio_loco.o
 snd-soc-allo-piano-dac-objs := allo-piano-dac.o
 snd-soc-pisound-objs := pisound.o
 snd-soc-cxsmtspk-pi-usb-objs := cxsmtspk-pi-usb.o
+snd-soc-cxsmtspk-pi-i2s-objs := cxsmtspk-pi-i2s.o
 
 obj-$(CONFIG_SND_BCM2708_SOC_ADAU1977_ADC) += snd-soc-adau1977-adc.o
 obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DAC) += snd-soc-hifiberry-dac.o
@@ -41,3 +42,4 @@ obj-$(CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO) += snd-soc-dionaudio-loco.o
 obj-$(CONFIG_SND_BCM2708_SOC_ALLO_PIANO_DAC) += snd-soc-allo-piano-dac.o
 obj-$(CONFIG_SND_PISOUND) += snd-soc-pisound.o
 obj-$(CONFIG_SND_BCM2708_SOC_CXSMTSPK_USB) += snd-soc-cxsmtspk-pi-usb.o
+obj-$(CONFIG_SND_BCM2708_SOC_CXSMTSPK_I2S) += snd-soc-cxsmtspk-pi-i2s.o
