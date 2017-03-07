@@ -89,7 +89,7 @@ static struct snd_soc_dai_link_component cxsmtspk_codecs[] = {
 		.name = "cx2072x.1-0033",
 	},
 	{ /* Playback*/
-		.dai_name = "cx2092x",
+		.dai_name = "cx2092x-aif",
 		.name = "cx2092x.1-0041",
 	},
 };
@@ -121,7 +121,6 @@ static struct snd_soc_dai_link cxsmtspk_pi_soundcard_dai[] = {
 static const struct snd_soc_dapm_widget cxsmtspk_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
-	SND_SOC_DAPM_LINE("Line In Jacks", NULL),
 	SND_SOC_DAPM_MIC("Microphone", NULL),
 };
 
@@ -133,7 +132,7 @@ static const struct snd_soc_dapm_route cxsmtspk_audio_map[] = {
 	{"Ext Spk", NULL, "PORTG"},
 
 	/* mic is connected to CX20921 */
-	{"DMIC",NULL, "Microphone"},
+	{"MIC",NULL, "Microphone"},
 };
 
 static struct snd_soc_card snd_soc_cxsmtspk = {
