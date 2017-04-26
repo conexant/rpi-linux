@@ -5,7 +5,17 @@ This repo was forked from https://github.com/raspberrypi/linux have been modifie
 The code is based raspberrypi/linux, commit’s SHA-1 hash
 [04c8e47067d4873c584395e5cb260b4f170a99ea](https://github.com/raspberrypi/linux/commit/04c8e47067d4873c584395e5cb260b4f170a99ea)
 
-**NOTE:** This kernel requries CX2092X Firmware with I2S format, 48Khz sample rate, 16 bits sample size.
+**All drivers patches can be downloaded from the following links**
+
+1. https://github.com/conexant/rpi-linux/commit/2300b06977312ed8c72d511d2ccef9e523a18eb2.patch
+2. https://github.com/conexant/rpi-linux/commit/42b8c90ef803f6ff8048d98994e0e553f2029022.patch
+3. https://github.com/conexant/rpi-linux/commit/c742ab72c38f4f974d41ceaa7f4557ae6b10c253.patch
+4. https://github.com/conexant/rpi-linux/commit/700c42e9e82e585058b83dfef2d29e119cdcdd4a.patch
+5. https://github.com/conexant/rpi-linux/commit/e867d62404a73797c2eceb241d85ee0dc68a66f1.patch
+6. https://github.com/conexant/rpi-linux/commit/f4570f0547091a76d482c7dbde275e6af4d249c8.patch
+7. https://github.com/conexant/rpi-linux/commit/88c026ed26d06751716a95493378e82228737d2b.patch
+8. https://github.com/conexant/rpi-linux/commit/e40501eff125512e58da9ea4ac6a4ecef47e956d.patch
+
 
 # BUILD KERNEL
 
