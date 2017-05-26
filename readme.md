@@ -22,6 +22,8 @@ The code is based raspberrypi/linux, commit’s SHA-1 hash
 
 Build the Linux kernel for the RPi 2. The following instructions refer to cross compiling the driver on an Ubuntu environment.
 
+**Note:** The following steps must be completed on the host machine (which is running the Ubuntu environment and which the kernel will be built on). The /boot/config.txt should be changed on the RPi 2, after the kernel is installed.
+
 Prior to building the Linux driver, the following packages must be installed: Git, bc, libncurses5-dev, libncursesw5-dev, and gcc-arm-linux-gnueabihf. All these packages can be installed with the following command:
 ```  
   $ sudo apt-get install git bc libncurses5-dev libncursesw5-dev gcc-arm-linux-gnueabihf
@@ -82,7 +84,7 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage modules dtbs
 Using the SD card with the AVS already setup, use a SD card adapter to connect the card to the host. Identify the FAT partition (boot) and the ext4 partition (root), this will be necessary to install the kernel to the SD card. See the section *Install Directly onto the SD card* [here](https://www.raspberrypi.org/documentation/linux/kernel/building.md) for details.
 
 ## CONFIGURE CONFIG.TXT 
-After the installation of the kernel is complete, edit the /boot/config.txt file with the following options:
+After the installation of the kernel is complete, insert the microSD card in the RPi 2 and edit the /boot/config.txt file with the following options:
 ```
 dtoverlay=rpi-cxsmartspk-usb
 dtoverlay=i2s-mmap
