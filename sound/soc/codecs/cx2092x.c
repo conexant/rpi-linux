@@ -9,7 +9,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
- */
+ ************************************************************************
+ *  Modified Date:  2017/4/19
+ *  File Version:   4.4.56
+ ************************************************************************/
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -17,7 +20,12 @@
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
+#include <linux/i2c.h>
+#include <linux/version.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 #include <linux/gpio/consumer.h>
+#endif
+#include <linux/regmap.h>
 #include <sound/pcm.h>
 #include <sound/soc.h>
 #include "cx2092x.h"
@@ -157,12 +165,16 @@ static int cmd_info(struct snd_kcontrol *kcontrol,
 static int cmd_get(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
+	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+	struct cx2092x_priv *cx2092x = snd_soc_codec_get_drvdata(codec);
+#else
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct cx2092x_priv *cx2092x =
 		snd_soc_component_get_drvdata(component);
-
+#endif
 	memcpy(ucontrol->value.bytes.data, &cx2092x->cmd,
-			sizeof(cx2092x->cmd));
+	       sizeof(cx2092x->cmd));
 
 	return 0;
 }
@@ -170,12 +182,16 @@ static int cmd_get(struct snd_kcontrol *kcontrol,
 static int cmd_put(struct snd_kcontrol *kcontrol,
 		   struct snd_ctl_elem_value *ucontrol)
 {
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
+	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+	struct cx2092x_priv *cx2092x = snd_soc_codec_get_drvdata(codec);
+#else
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct cx2092x_priv *cx2092x = snd_soc_component_get_drvdata(component);
 	struct snd_soc_codec *codec = snd_soc_component_to_codec(component);
-
+#endif
 	memcpy(&cx2092x->cmd, ucontrol->value.bytes.data,
-			sizeof(cx2092x->cmd));
+	       sizeof(cx2092x->cmd));
 
 	cx2092x->cmd_res = cx2092x_sendcmd(codec, &cx2092x->cmd);
 
@@ -199,8 +215,12 @@ static int mode_info(struct snd_kcontrol *kcontrol,
 static int mode_get(struct snd_kcontrol *kcontrol,
 		    struct snd_ctl_elem_value *ucontrol)
 {
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
+	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+#else
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct snd_soc_codec *codec = snd_soc_component_to_codec(component);
+#endif
 	struct cx2092x_cmd cmd;
 	int ret = 0;
 
@@ -235,8 +255,12 @@ static int mode_get(struct snd_kcontrol *kcontrol,
 static int mode_put(struct snd_kcontrol *kcontrol,
 		    struct snd_ctl_elem_value *ucontrol)
 {
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
+	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+#else
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct snd_soc_codec *codec = snd_soc_component_to_codec(component);
+#endif
 	struct cx2092x_cmd cmd;
 	int ret = -1;
 
@@ -262,11 +286,13 @@ static int mode_put(struct snd_kcontrol *kcontrol,
 
 static const struct snd_kcontrol_new cx2092x_snd_controls[] = {
 	CX2092X_CONTROL("SendCmd", cmd_info, cmd_get, cmd_put,
-		SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_WRITE|
-		SNDRV_CTL_ELEM_ACCESS_VOLATILE),
+			SNDRV_CTL_ELEM_ACCESS_READ |
+			SNDRV_CTL_ELEM_ACCESS_WRITE |
+			SNDRV_CTL_ELEM_ACCESS_VOLATILE),
 	CX2092X_CONTROL("Mode", mode_info, mode_get, mode_put,
-		SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_WRITE|
-		SNDRV_CTL_ELEM_ACCESS_VOLATILE),
+			SNDRV_CTL_ELEM_ACCESS_READ |
+			SNDRV_CTL_ELEM_ACCESS_WRITE |
+			SNDRV_CTL_ELEM_ACCESS_VOLATILE),
 };
 
 
@@ -309,21 +335,16 @@ static int cx2092x_reset(struct snd_soc_codec *codec)
 	struct cx2092x_priv *cx2092x = snd_soc_codec_get_drvdata(codec);
 
 	if (cx2092x->gpiod_reset) {
+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
 		gpiod_set_value_cansleep(cx2092x->gpiod_reset, 0);
 		mdelay(10);
 		gpiod_set_value_cansleep(cx2092x->gpiod_reset, 1);
+	#endif
 	}
 
 	return 0;
 }
 
-const struct of_device_id cx2092x_dt_ids[] = {
-	{ .compatible = "cnxt,cx20921", },
-	{ .compatible = "cnxt,cx20924", },
-	{ }
-};
-EXPORT_SYMBOL_GPL(cx2092x_dt_ids);
-MODULE_DEVICE_TABLE(of, cx2092x_dt_ids);
 
 static int cx2092x_probe(struct snd_soc_codec *codec)
 {
@@ -334,27 +355,31 @@ static int cx2092x_remove(struct snd_soc_codec *codec)
 {
 	struct cx2092x_priv *cx2092x = snd_soc_codec_get_drvdata(codec);
 
-	if (cx2092x->gpiod_reset)
+	if (cx2092x->gpiod_reset) {
+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
 		/* Set codec to the reset state */
 		gpiod_set_value_cansleep(cx2092x->gpiod_reset, 0);
-
+	#endif
+	}
 	return 0;
 }
 
 static const struct snd_soc_codec_driver soc_codec_driver_cx2092x = {
 	.probe = cx2092x_probe,
 	.remove = cx2092x_remove,
-
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
 	.component_driver = {
+#endif
 		.controls = cx2092x_snd_controls,
 		.num_controls = ARRAY_SIZE(cx2092x_snd_controls),
 		.dapm_widgets = cx2092x_dapm_widgets,
 		.num_dapm_widgets = ARRAY_SIZE(cx2092x_dapm_widgets),
 		.dapm_routes = cx2092x_intercon,
 		.num_dapm_routes = ARRAY_SIZE(cx2092x_intercon),
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
 	},
+#endif
 };
-EXPORT_SYMBOL_GPL(soc_codec_driver_cx2092x);
 
 static bool cx2092x_volatile_register(struct device *dev, unsigned int reg)
 {
@@ -372,11 +397,15 @@ const struct regmap_config cx2092x_regmap_config = {
 };
 EXPORT_SYMBOL_GPL(cx2092x_regmap_config);
 
-int cx2092x_dev_probe(struct device *dev, struct regmap *regmap)
+static int cx2092x_i2c_probe(struct i2c_client *i2c,
+			     const struct i2c_device_id *id)
 {
 	struct cx2092x_priv *cx2092x;
 	int ret;
+	struct device *dev = &i2c->dev;
+	struct regmap *regmap;
 
+	regmap = devm_regmap_init_i2c(i2c, &cx2092x_regmap_config);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
@@ -384,11 +413,13 @@ int cx2092x_dev_probe(struct device *dev, struct regmap *regmap)
 	if (!cx2092x)
 		return -ENOMEM;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
 	/* GPIOs */
 	cx2092x->gpiod_reset = devm_gpiod_get_optional(dev, "reset",
 						       GPIOD_OUT_LOW);
 	if (IS_ERR(cx2092x->gpiod_reset))
 		return PTR_ERR(cx2092x->gpiod_reset);
+#endif
 
 	dev_set_drvdata(dev, cx2092x);
 	cx2092x->regmap = regmap;
@@ -404,7 +435,39 @@ int cx2092x_dev_probe(struct device *dev, struct regmap *regmap)
 
 	return ret;
 }
-EXPORT_SYMBOL_GPL(cx2092x_dev_probe);
+
+static int cx2092x_i2c_remove(struct i2c_client *client)
+{
+	snd_soc_unregister_codec(&client->dev);
+	return 0;
+}
+
+const struct of_device_id cx2092x_dt_ids[] = {
+	{ .compatible = "cnxt,cx20921", },
+	{ .compatible = "cnxt,cx20924", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, cx2092x_dt_ids);
+
+static const struct i2c_device_id cx2092x_i2c_id[] = {
+	{"cx20921", 0},
+	{"cx20924", 0},
+	{}
+};
+MODULE_DEVICE_TABLE(i2c, cx2092x_i2c_id);
+
+static struct i2c_driver cx2092x_i2c_driver = {
+	.driver = {
+		.name = "cx2092x",
+		.owner = THIS_MODULE,
+		.of_match_table = of_match_ptr(cx2092x_dt_ids),
+	},
+	.id_table = cx2092x_i2c_id,
+	.probe = cx2092x_i2c_probe,
+	.remove = cx2092x_i2c_remove,
+};
+
+module_i2c_driver(cx2092x_i2c_driver);
 
 MODULE_DESCRIPTION("ASoC CX2092X ALSA SoC Driver");
 MODULE_AUTHOR("Simon Ho <simon.ho@conexant.com>");

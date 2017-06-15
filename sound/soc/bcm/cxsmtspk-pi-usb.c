@@ -26,12 +26,13 @@
 
 #include "../codecs/cx2072x.h"
 #define CX20921_MCLK_HZ  12288000
+#define CX20921_SAMPLE_RATE 48000
 
 static int snd_cxsmtspk_pi_soundcard_startup(
 	struct snd_pcm_substream *substream)
 {
 	return snd_pcm_hw_constraint_single(substream->runtime,
-			SNDRV_PCM_HW_PARAM_RATE, 48000);
+			SNDRV_PCM_HW_PARAM_RATE, CX20921_SAMPLE_RATE);
 }
 
 static int snd_cxsmtspk_pi_soundcard_hw_params(
@@ -53,7 +54,7 @@ static struct snd_soc_ops snd_cxsmtspk_pi_soundcard_ops = {
 
 static int cxsmtspk_pi_soundcard_dai_init(struct snd_soc_pcm_runtime *rtd)
 {
-	/* DOTO: Keep the mic paths active druing suspend.
+	/* TODO: Keep the mic paths active during suspend.
 	 *
 	 */
 	struct snd_soc_card *card = rtd->card;
@@ -79,7 +80,7 @@ static struct snd_soc_dai_link cxsmtspk_pi_soundcard_dai[] = {
 		.dai_fmt = SND_SOC_DAIFMT_CBM_CFM |
 			SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF,
 	},
-	/*
+#if 0
 	{
 		.name = "SmartSpk",
 		.stream_name = "SmartSpk Playback",
@@ -95,7 +96,7 @@ static struct snd_soc_dai_link cxsmtspk_pi_soundcard_dai[] = {
 		.dai_fmt = SND_SOC_DAIFMT_CBS_CFS |
 			SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF,
 	},
-	*/
+#endif
 };
 
 static const struct snd_soc_dapm_widget cxsmtspk_pi_dapm_widgets[] = {
@@ -148,7 +149,7 @@ static const struct snd_soc_dapm_route graph[] = {
 };
 
 static const struct snd_soc_component_driver cxsmtspk_i2s_component = {
-        .name = "cxsmtspk-i2s-dsp",
+	.name = "cxsmtspk-i2s-dsp",
 	.dapm_widgets = widgets,
 	.num_dapm_widgets = ARRAY_SIZE(widgets),
 	.dapm_routes = graph,
@@ -184,11 +185,6 @@ static int cxsmtspk_pi_soundcard_probe(struct platform_device *pdev)
 	}
 
 
-/*
-        ret = devm_snd_soc_register_component(&pdev->dev,
-	      &cxsmtspk_i2s_component, cxsmtspk_i2s_dai,
-	      ARRAY_SIZE(cxsmtspk_i2s_dai));
-*/
 	ret = snd_soc_register_card(card);
 	if (ret)
 		dev_err(&pdev->dev,
