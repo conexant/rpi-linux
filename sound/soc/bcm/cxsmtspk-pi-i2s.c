@@ -23,28 +23,25 @@
 #include <sound/soc.h>
 #include <sound/pcm_params.h>
 #include <sound/control.h>
-#include <linux/gpio.h>
-#include <sound/jack.h>
-#include <sound/pcm.h>
+
 #include "../codecs/cx2072x.h"
 
 #define CX20921_MCLK_HZ  12288000
-#define CX20921_SAMPLE_RATE 48000
 
 static int snd_cxsmtspk_pi_soundcard_startup(
 	struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	int ret = 0;
+	int ret =0;
 
 	ret = snd_soc_dai_set_fmt(rtd->codec_dai, SND_SOC_DAIFMT_CBS_CFS|
-				SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF);
+                        SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF);
 	if (ret)
-		pr_debug("cx:err hw_params ret=%d\n", ret);
+		pr_debug("cx:err hw_params ret=%d\n",ret);
 
 	pr_debug("cx: cxsmtspk_pi_soundcard_start\n");
 	return snd_pcm_hw_constraint_single(substream->runtime,
-			SNDRV_PCM_HW_PARAM_RATE, CX20921_SAMPLE_RATE);
+			SNDRV_PCM_HW_PARAM_RATE, 48000);
 }
 
 static int snd_cxsmtspk_pi_soundcard_hw_params(
@@ -57,12 +54,12 @@ static int snd_cxsmtspk_pi_soundcard_hw_params(
 
 	/*overrid the codec setting*/
 	ret = snd_soc_dai_set_fmt(rtd->codec_dai, SND_SOC_DAIFMT_CBS_CFS|
-				SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF);
+                        SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF);
 	if (ret)
-		pr_debug("cx: hw_params ret=%d\n", ret);
+		pr_debug("cx: hw_params ret=%d\n",ret);
 
-	snd_soc_dai_set_bclk_ratio(codec_dai, 32);
-	return snd_soc_dai_set_bclk_ratio(cpu_dai, 32);
+	snd_soc_dai_set_bclk_ratio(codec_dai, 64);
+	return snd_soc_dai_set_bclk_ratio(cpu_dai, 64);
 }
 
 /* machine stream operations */
@@ -71,38 +68,14 @@ static struct snd_soc_ops snd_cxsmtspk_pi_soundcard_ops = {
 	.hw_params = snd_cxsmtspk_pi_soundcard_hw_params,
 };
 
-static struct snd_soc_jack csmtspk_pi_hp_jack;
-
-static struct snd_soc_jack_pin csmtspk_pi_hp_jack_pins[] = {
-	{
-		.pin = "Headphones",
-		.mask = SND_JACK_HEADPHONE,
-	},
-};
-
-static struct snd_soc_jack_gpio csmtspk_pi_hp_jack_gpio = {
-	.name = "Headphone detection",
-	.report = SND_JACK_HEADPHONE,
-	.debounce_time = 150,
-	.gpio = 25,
-	.invert = 1,
-};
-
 static int cxsmtspk_pi_soundcard_dai_init(struct snd_soc_pcm_runtime *rtd)
 {
-	/* TODO: Keep the mic paths active during suspend.
+	/* DOTO: Keep the mic paths active druing suspend.
 	 *
 	 */
 	struct snd_soc_card *card = rtd->card;
 
 	pr_debug("cx: cxsmtspk_pi_sundcard_dai_init\n");
-	snd_soc_card_jack_new(rtd->card, "Headphones", SND_JACK_HEADPHONE,
-			      &csmtspk_pi_hp_jack, csmtspk_pi_hp_jack_pins,
-			      ARRAY_SIZE(csmtspk_pi_hp_jack_pins));
-
-	snd_soc_jack_add_gpios(&csmtspk_pi_hp_jack,
-			       1,
-			       &csmtspk_pi_hp_jack_gpio);
 	/*snd_soc_dai_set_fmt*/
 	snd_soc_dapm_enable_pin(&card->dapm, "AEC REF");
 	snd_soc_dapm_sync(&card->dapm);
@@ -122,12 +95,12 @@ static struct snd_soc_dai_link_component cxsmtspk_codecs[] = {
 };
 
 static struct snd_soc_codec_conf cxsmtspk_codec_conf[] = {
-	{
-		.dev_name = "cx2072x.1-0033",
-	},
-	{
-		.dev_name = "cx2092x.1-0041",
-	},
+        {
+                 .dev_name = "cx2072x.1-0033",
+         },
+         {
+                 .dev_name = "cx2092x.1-0041",
+         },
 };
 
 static struct snd_soc_dai_link cxsmtspk_pi_soundcard_dai[] = {
@@ -146,24 +119,20 @@ static struct snd_soc_dai_link cxsmtspk_pi_soundcard_dai[] = {
 };
 
 static const struct snd_soc_dapm_widget cxsmtspk_dapm_widgets[] = {
-	SND_SOC_DAPM_HP("Headphones", NULL),
-	SND_SOC_DAPM_SPK("Speakers", NULL),
-	SND_SOC_DAPM_MIC("Mic Jack", NULL),
+	SND_SOC_DAPM_HP("Headphone Jack", NULL),
+	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+	SND_SOC_DAPM_MIC("Microphone", NULL),
 };
 
 static const struct snd_soc_dapm_route cxsmtspk_audio_map[] = {
 	/* headphone connected to LHPOUT, RHPOUT */
-	{"Headphones", NULL, "PORTA"},
+	{"Headphone Jack", NULL, "PORTA"},
 
 	/* speaker connected to LOUT, ROUT */
-	{"Speakers", NULL, "PORTG"},
+	{"Ext Spk", NULL, "PORTG"},
 
 	/* mic is connected to CX20921 */
-	{"MIC", NULL, "Mic Jack"},
-};
-
-static const struct snd_kcontrol_new cxsmtspk_pi_controls[] = {
-	SOC_DAPM_PIN_SWITCH("Speakers"),
+	{"MIC",NULL, "Microphone"},
 };
 
 static struct snd_soc_card snd_soc_cxsmtspk = {
@@ -172,8 +141,6 @@ static struct snd_soc_card snd_soc_cxsmtspk = {
 	.num_links = ARRAY_SIZE(cxsmtspk_pi_soundcard_dai),
 	.codec_conf = cxsmtspk_codec_conf,
 	.num_configs = ARRAY_SIZE(cxsmtspk_codec_conf),
-	.controls = cxsmtspk_pi_controls,
-	.num_controls = ARRAY_SIZE(cxsmtspk_pi_controls),
 	.dapm_widgets = cxsmtspk_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(cxsmtspk_dapm_widgets),
 	.dapm_routes = cxsmtspk_audio_map,
@@ -211,14 +178,10 @@ static int cxsmtspk_pi_soundcard_probe(struct platform_device *pdev)
 			"snd_soc_register_card failed (%d)\n", ret);
 
 	return ret;
-}
-
-static int cxsmtspk_pi_soundcard_remove(struct platform_device *pdev)
+} static int cxsmtspk_pi_soundcard_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
-	snd_soc_jack_free_gpios(&csmtspk_pi_hp_jack, 1,
-					&csmtspk_pi_hp_jack_gpio);
 	return snd_soc_unregister_card(card);
 }
 

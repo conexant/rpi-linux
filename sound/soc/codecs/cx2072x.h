@@ -9,8 +9,8 @@
  * published by the Free Software Foundation.
  *
  *************************************************************************
- *  Modified Date:  14/6/17
- *  File Version:   4.4.61
+ *  Modified Date:  01/3/17
+ *  File Version:   4.4.53
  ************************************************************************/
 #define NUM_OF_DAI 1
 #define CX2072X_MCLK_PLL 1
@@ -22,7 +22,7 @@
 
 #define CX2072X_REG_MAX 0x8a3c
 #define AUDDRV_VERSION(major0, major1, minor, build) \
-		((major0) << 24 | (major1) << 16 | (minor) << 8 | (build))
+		((major0)<<24 | (major1)<<16 | (minor)<<8 | (build))
 
 #define CX2072X_VENDOR_ID				 0x0200
 #define CX2072X_REVISION_ID				 0x0208
@@ -190,6 +190,8 @@ enum cx2072x_jack_types {
 	CX_JACK_NOKIE_HEADSET = 0x0003,
 };
 
+int cx2072x_hs_jack_report(struct snd_soc_codec *codec);
+
 enum REG_SAMPLE_SIZE {
 	SAMPLE_SIZE_8_BITS = 0,
 	SAMPLE_SIZE_16_BITS = 1,
@@ -210,7 +212,7 @@ union REG_I2SPCM_CTRL_REG1 {
 		u32 tx_frm_len:5;
 		u32 tx_sa_size:2;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
 
 
@@ -233,7 +235,7 @@ union REG_I2SPCM_CTRL_REG2 {
 		u32 tx_endian_sel:1;
 		u32 tx_dstart_dly:1;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
 
 union REG_I2SPCM_CTRL_REG3 {
@@ -255,7 +257,7 @@ union REG_I2SPCM_CTRL_REG3 {
 		u32 rx_endian_sel:1;
 		u32 rx_dstart_dly:1;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
 
 
@@ -276,7 +278,7 @@ union REG_I2SPCM_CTRL_REG4 {
 		u32 rx_slot_6:5;
 		u32 reserved3:6;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
 
 
@@ -290,7 +292,7 @@ union REG_I2SPCM_CTRL_REG5 {
 		u32 i2s_pcm_clk_div:7;
 		u32 i2s_pcm_clk_div_chan_en:1;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
 
 union REG_I2SPCM_CTRL_REG6 {
@@ -302,7 +304,7 @@ union REG_I2SPCM_CTRL_REG6 {
 		u32 tx_pause_cycles:3;
 		u32 tx_pause_start_pos:8;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
 
 union REG_DIGITAL_BIOS_TEST2 {
@@ -315,13 +317,9 @@ union REG_DIGITAL_BIOS_TEST2 {
 		u32 i2s_bclk_en:1;
 		u32 i2s_bclk_invert:1;
 		u32 pll_ref_clock:1;
-		u32 class_d_shield_clk:1;
+		u32 class_d_sheild_clk:1;
 		u32 audio_pll_bypass_mode:1;
 		u32 reserved:4;
 	} r;
-	u32 ulval;
+	u32 ulVal;
 };
-
-int cx2072x_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio);
-int cx2072x_enable_jack_detect(struct snd_soc_codec *codec);
-int cx2072x_get_jack_state(struct snd_soc_codec *codec);

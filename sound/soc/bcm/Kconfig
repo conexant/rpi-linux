@@ -129,19 +129,16 @@ config SND_PISOUND
 	  Say Y or M if you want to add support for Blokas Labs pisound.
 
 config SND_BCM2708_SOC_CXSMTSPK_USB
-	tristate "Support for Smart Speaker RPi add on soundcard (USB)"
+	tristate "Support for Smart Speaker Pi add on soundcard (USB)"
 	depends on SND_BCM2708_SOC_I2S || SND_BCM2835_SOC_I2S
 	select SND_SOC_CX2072X
 	help
-	  Say Y or M if you want to add support for Conexant Smart Speaker to
-          the CX2072X I2S and CX2092X USB interface.
+	  Say Y or M if you want to add support for Conexant SmartSpeaker (USB)
 
 config SND_BCM2708_SOC_CXSMTSPK_I2S
-	tristate "Support for Smart Speaker RPi add on soundcard (I2S)"
+	tristate "Support for Smart Speaker Pi add on soundcard (I2S)"
 	depends on SND_BCM2708_SOC_I2S || SND_BCM2835_SOC_I2S
 	select SND_SOC_CX2072X
-	select SND_SOC_CX2092X
+	select SND_SOC_CX2092X_I2C
 	help
-	  Say Y or M if you want to add support for Conexant Smart Speaker to
-          the CX2072X and CX2092X I2S interface.
-
+	  Say Y or M if you want to add support for Conexant SmartSpeaker (I2S)

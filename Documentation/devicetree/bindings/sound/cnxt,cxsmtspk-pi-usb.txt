@@ -1,6 +1,0 @@
-Conexant audio with Smart Speaker USB codec.
-
-Required properties:
-
-- compatible                            : "cnxt,cxsmtspk-pi-usb"
-

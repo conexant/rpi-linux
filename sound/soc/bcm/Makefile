@@ -23,6 +23,7 @@ snd-soc-allo-piano-dac-objs := allo-piano-dac.o
 snd-soc-pisound-objs := pisound.o
 snd-soc-cxsmtspk-pi-usb-objs := cxsmtspk-pi-usb.o
 snd-soc-cxsmtspk-pi-i2s-objs := cxsmtspk-pi-i2s.o
+
 obj-$(CONFIG_SND_BCM2708_SOC_ADAU1977_ADC) += snd-soc-adau1977-adc.o
 obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DAC) += snd-soc-hifiberry-dac.o
 obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DACPLUS) += snd-soc-hifiberry-dacplus.o

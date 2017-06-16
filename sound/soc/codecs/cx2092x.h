@@ -14,6 +14,13 @@
 #ifndef __CX2092X_PRIV_H__
 #define __CX2092X_PRIV_H__
 
+#include <linux/regmap.h>
+
+extern const struct of_device_id cx2092x_dt_ids[];
+extern const struct regmap_config cx2092x_regmap_config;
+
+int cx2092x_dev_probe(struct device *dev, struct regmap *regmap);
+
 #define CX2092X_REG_MAX 0x2000
 
 #endif
