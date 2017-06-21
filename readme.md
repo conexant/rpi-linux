@@ -1,6 +1,6 @@
 
 # Overview
-This repo, forked from https://github.com/raspberrypi/linux, has been modified for the **Conexant AudioSmart™ 4-Mic Development Kit for Amazon AVS**. This creates a 4.4.50 based kernel running on Raspberry Pi 2 system. 
+This repo, forked from https://github.com/raspberrypi/linux, has been modified for the **Conexant AudioSmart® 4-Mic Development Kit for Amazon AVS**. This creates a 4.4.50 based kernel running on Raspberry Pi 2 system. 
 
 The code is based raspberrypi/linux, commit’s SHA-1 hash
 [04c8e47067d4873c584395e5cb260b4f170a99ea](https://github.com/raspberrypi/linux/commit/04c8e47067d4873c584395e5cb260b4f170a99ea)
