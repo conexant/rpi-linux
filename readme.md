@@ -52,31 +52,18 @@ $ git checkout
 ```
 ## BUILD SOURCES
 
-Use the following commands to build the code, assuming your build platform is Ubuntu.
+Use the following commands to create Rpi Linux .config file, assuming your build platform is Ubuntu.
 ```
 $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig
 ```
-Enable the driver options
-```
-$ make ARCH=arm menuconfig 
-```
-In the Linux/arm 4.4.50 Kernel Configuration menu, go to:
-```
-[Device Drivers] => [Sound card support] => [Advanced Linux Sound Architecture] => [ALSA for SoC audio support]
-```
-Check the two boxes:
-```
-[M] - Support for Smart Speaker Pi add on soundcard (USB)
-[M] - Support for Smart Speaker Pi add on soundcard (I2S)
-```
-Save the configuration and exit out back to the terminal. 
-
 Then, build the code. 
 **Note: The compilation can be sped up by using the '-j n' option, with n equal to the number of processors * 1.5. This will reduce the compilation time significantly.**
 
 ```
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage modules dtbs
 ```
+
+Or you can use the build script **'build.sh'** to execute the 2 commands above.
 
 ## INSTALL DIRECTLY ONTO THE SD CARD
 **Note:** Before installing the kernel, the microSD card should have completed the Amazon AVS setup.
