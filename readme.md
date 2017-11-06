@@ -26,7 +26,7 @@ Build the Linux kernel for the RPi 2. The following instructions refer to cross 
 
 Prior to building the Linux driver, the following packages must be installed: Git, bc, libncurses5-dev, libncursesw5-dev, and gcc-arm-linux-gnueabihf. All these packages can be installed with the following command:
 ```  
-  $ sudo apt-get install git bc libncurses5-dev libncursesw5-dev gcc-arm-linux-gnueabihf
+  $ sudo apt-get install build-essential git bc libncurses5-dev libncursesw5-dev gcc-arm-linux-gnueabihf
 ```
 There are two main methods for building the kernel. Since *Local Building* method will take a long time, we are going to focus on *Cross Compiling* method. 
 
